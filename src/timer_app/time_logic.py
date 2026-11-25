@@ -11,6 +11,7 @@ class CountdownTimer:
     def __init__(self, duration, clock = time.monotonic):
         self.state = State.IDLE
         self.clock = clock
+        self.duration = duration
         self.remaining = duration
         self.end_time = None
 
@@ -40,6 +41,14 @@ class CountdownTimer:
             self.state = State.FINISHED
             self.remaining = 0
             self.end_time = None
+
+    def reset(self, duration=None):
+        '''Resets the timer to its initial or provided duration'''
+        if duration is not None:
+            self.duration = duration
+        self.remaining = self.duration
+        self.end_time = None
+        self.state = State.IDLE
 
     def remaining_time(self):
         '''Returns remaining time'''

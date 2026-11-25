@@ -50,6 +50,18 @@ def test_timer_is_finished():
     assert timer.is_finished() == State.FINISHED
 
 
+def test_reset_restores_timer_duration_after_finishing():
+    timer, clock = create_timer(duration=10)
+    timer.start()
+    clock.advance(10)
+    assert timer.is_finished() == State.FINISHED
+
+    timer.reset()
+
+    assert timer.state == State.IDLE
+    assert timer.remaining_time() == 10
+
+
 def test_remaining_time_on_idle_timer():
     timer, _ = create_timer()
     assert timer.remaining_time() == 60
@@ -70,12 +82,9 @@ def test_resume_paused_timer():
     timer.start()
     clock.advance(3)
     timer.pause()
-
     assert timer.remaining_time() == 7
-
     clock.advance(4)
     assert timer.remaining_time() == 7
-
     timer.resume()
     assert timer.state == State.RUNNING
     clock.advance(2)
