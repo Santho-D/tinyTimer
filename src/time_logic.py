@@ -56,4 +56,4 @@ class CountdownTimer:
         '''Reports when timer has ended'''
         if self.remaining_time() <= 0:
             self.state = State.FINISHED
-            return self.state
+        return self.state

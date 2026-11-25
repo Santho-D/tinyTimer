@@ -31,7 +31,7 @@ def test_timer_is_stopped():
 
 def test_timer_is_finished():
     clock = FakeClock(2)
-    timer = CountdownTimer(clock.time)
+    timer = CountdownTimer(clock.time, clock=lambda: clock.time)
     timer.start()
     clock.advance(2)
     assert timer.is_finished() == State.FINISHED
@@ -42,9 +42,10 @@ def test_remaining_time_on_idle_timer():
 
 def test_stopped_timer_stays_frozen():
     clock = FakeClock(2)
-    timer = CountdownTimer(clock.time)
+    timer = CountdownTimer(clock.time, clock=lambda: clock.time)
     timer.start()
+    clock.advance(3)
     timer.stop()
     first = timer.remaining_time()
-    clock.advance(2)
+    clock.advance(4)
     assert timer.remaining_time() == first
