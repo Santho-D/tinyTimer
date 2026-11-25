@@ -1,8 +1,11 @@
-import time
-
 from src.state import State
 from src.time_logic import CountdownTimer
 
+class FakeClock:
+    def __init__(self, seconds=0):
+        self.time = seconds
+    def advance(self, seconds):
+        self.time += seconds
 
 def test_timer_is_idle():
     timer = CountdownTimer(60)
@@ -27,9 +30,10 @@ def test_timer_is_stopped():
 
 
 def test_timer_is_finished():
-    timer = CountdownTimer(1)
+    clock = FakeClock(2)
+    timer = CountdownTimer(clock.time)
     timer.start()
-    time.sleep(2)
+    clock.advance(2)
     assert timer.is_finished() == State.FINISHED
 
 def test_remaining_time_on_idle_timer():
@@ -37,9 +41,10 @@ def test_remaining_time_on_idle_timer():
     assert timer.remaining_time() == 60
 
 def test_stopped_timer_stays_frozen():
-    timer = CountdownTimer(5)
+    clock = FakeClock(2)
+    timer = CountdownTimer(clock.time)
     timer.start()
     timer.stop()
     first = timer.remaining_time()
-    time.sleep(1)
+    clock.advance(2)
     assert timer.remaining_time() == first

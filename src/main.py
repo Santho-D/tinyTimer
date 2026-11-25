@@ -4,7 +4,7 @@ from time_logic import *
 timer = CountdownTimer(30)
 
 def tick():
-    remaining = next(timer.countdown())
+    remaining = timer.remaining_time()
     hours = remaining // 60 //60
     minutes = remaining // 60 % 60
     seconds = remaining % 60

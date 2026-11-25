@@ -8,33 +8,29 @@ class CountdownTimer:
 
 
 
-    def __init__(self, duration):
+    def __init__(self, duration, clock = time.monotonic):
         self.state = State.IDLE
+        self.clock = clock
         self.remaining = duration
         self.end_time = None
-
-    def countdown(self):
-        while self.remaining > 0:
-            yield self.remaining
-            self.remaining -= 1
 
     def start(self):
         '''Starts the timer'''
         if self.state == State.IDLE:
-            self.end_time = time.monotonic() + self.remaining
+            self.end_time = self.clock() + self.remaining
             self.state = State.RUNNING
 
     def pause(self):
         '''Pauses the timer'''
         if self.state == State.RUNNING:
-            self.remaining = max(0, self.end_time - time.monotonic())
+            self.remaining = max(0, self.end_time - self.clock())
             self.state = State.PAUSED
 
 
     def resume(self):
         '''Resumes the timer after pause'''
         if self.state == State.PAUSED:
-            self.end_time = time.monotonic() + self.remaining
+            self.end_time = self.clock() + self.remaining
             self.state = State.RUNNING
 
 
@@ -50,17 +46,14 @@ class CountdownTimer:
         if self.end_time != None:
             if self.state == State.PAUSED:
                 return self.remaining
-            elif max(0, self.end_time - time.monotonic())<= 0:
-                self.state = State.FINISHED
-                return 0
             else:
-                self.remaining = max(0, self.end_time - time.monotonic())
+                self.remaining = max(0, self.end_time - self.clock())
                 return self.remaining
         else:
             return self.remaining
 
     def is_finished(self):
         '''Reports when timer has ended'''
-        if self.remaining_time() == 0:
-                self.state = State.FINISHED
-                return self.state
+        if self.remaining_time() <= 0:
+            self.state = State.FINISHED
+            return self.state
