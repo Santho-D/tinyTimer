@@ -1,51 +1,82 @@
-from src.state import State
-from src.time_logic import CountdownTimer
+from timer_app.state import State
+from timer_app.time_logic import CountdownTimer
+
 
 class FakeClock:
-    def __init__(self, seconds=0):
-        self.time = seconds
+    def __init__(self, now=0):
+        self.now = now
+
+    def __call__(self):
+        return self.now
+
     def advance(self, seconds):
-        self.time += seconds
+        self.now += seconds
+
+
+def create_timer(duration=60, start_time=0):
+    clock = FakeClock(start_time)
+    return CountdownTimer(duration, clock=clock), clock
+
 
 def test_timer_is_idle():
-    timer = CountdownTimer(60)
+    timer, _ = create_timer()
     assert timer.state == State.IDLE
 
+
 def test_timer_is_running():
-    timer = CountdownTimer(60)
+    timer, _ = create_timer()
     timer.start()
     assert timer.state == State.RUNNING
 
+
 def test_timer_is_paused():
-    timer = CountdownTimer(60)
+    timer, _ = create_timer()
     timer.start()
     timer.pause()
     assert timer.state == State.PAUSED
 
-def test_timer_is_stopped():
-    timer = CountdownTimer(60)
+
+def test_timer_is_endped():
+    timer, _ = create_timer()
     timer.start()
-    timer.stop()
+    timer.end()
     assert timer.state == State.FINISHED
 
 
 def test_timer_is_finished():
-    clock = FakeClock(2)
-    timer = CountdownTimer(clock.time, clock=lambda: clock.time)
+    timer, clock = create_timer(duration=2)
     timer.start()
     clock.advance(2)
     assert timer.is_finished() == State.FINISHED
 
+
 def test_remaining_time_on_idle_timer():
-    timer = CountdownTimer(60)
+    timer, _ = create_timer()
     assert timer.remaining_time() == 60
 
-def test_stopped_timer_stays_frozen():
-    clock = FakeClock(2)
-    timer = CountdownTimer(clock.time, clock=lambda: clock.time)
+
+def test_paused_timer_stays_frozen():
+    timer, clock = create_timer(duration=10)
     timer.start()
     clock.advance(3)
-    timer.stop()
+    timer.pause()
     first = timer.remaining_time()
     clock.advance(4)
     assert timer.remaining_time() == first
+
+
+def test_resume_paused_timer():
+    timer, clock = create_timer(duration=10)
+    timer.start()
+    clock.advance(3)
+    timer.pause()
+
+    assert timer.remaining_time() == 7
+
+    clock.advance(4)
+    assert timer.remaining_time() == 7
+
+    timer.resume()
+    assert timer.state == State.RUNNING
+    clock.advance(2)
+    assert timer.remaining_time() == 5

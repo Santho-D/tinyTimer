@@ -1,7 +1,9 @@
 from tkinter import *
-from time_logic import *
+from timer_app.time_logic import CountdownTimer
 
 timer = CountdownTimer(30)
+SIZE = 420
+MARGIN = 20
 
 def tick():
     remaining = timer.remaining_time()
@@ -25,7 +27,7 @@ def clickStop():
 
 window = Tk()
 window.title("tinyTimer")
-window.geometry("420x300")
+window.geometry(f"{SIZE}x{SIZE}")
 window.config(background="#3d3f41")
 icon = PhotoImage(file="") # change to icon image file
 # window.iconbitmap(True, icon)
@@ -48,6 +50,12 @@ labelTime.config(text="00:00:00",
 )
 labelTime.pack()
 
+canvas_margin = 5
+canvas_size = 150
+canvasTime = Canvas(window, width=canvas_size, height=canvas_size)
+canvasTime.create_arc(canvas_margin, canvas_margin, (canvas_size-canvas_margin), (canvas_size-canvas_margin), start=90, extent=-90, fill="red")
+canvasTime.config(bg="#3d3f41",border=0, highlightthickness=0)
+canvasTime.pack()
 
 entry = Entry(window)
 entry.config(font="arial",

@@ -1,6 +1,6 @@
 import time
 
-from src.state import State
+from timer_app.state import State
 
 
 class CountdownTimer:
@@ -34,7 +34,7 @@ class CountdownTimer:
             self.state = State.RUNNING
 
 
-    def stop(self):
+    def end(self):
         '''Ends the timer'''
         if self.state == State.RUNNING or self.state == State.PAUSED:
             self.state = State.FINISHED
