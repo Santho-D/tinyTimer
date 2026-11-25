@@ -1,8 +1,7 @@
-from asyncio.base_futures import _FINISHED
-
-import pytest
-from modules.time_logic import CountdownTimer, State
 import time
+
+from src.state import State
+from src.time_logic import CountdownTimer
 
 
 def test_timer_is_idle():

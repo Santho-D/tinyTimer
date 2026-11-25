@@ -1,11 +1,10 @@
 from tkinter import *
+from time_logic import *
 
-from clock import countdown
-
-timer = countdown(30)
+timer = CountdownTimer(30)
 
 def tick():
-    remaining = next(timer)
+    remaining = next(timer.countdown())
     hours = remaining // 60 //60
     minutes = remaining // 60 % 60
     seconds = remaining % 60
@@ -17,8 +16,7 @@ def tick():
 
 def clickStart():
     time = int(entry.get())
-    global timer
-    timer = countdown(time)
+    timer.remaining = time
     tick()
 
 def clickStop():

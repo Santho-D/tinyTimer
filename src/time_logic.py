@@ -1,28 +1,28 @@
 import time
-from enum import Enum
 
-
-class State(Enum):
-    IDLE = "idle"
-    RUNNING = "running"
-    PAUSED = "paused"
-    FINISHED = "finished"
+from src.state import State
 
 
 class CountdownTimer:
     '''Conflicting States will be silently ignored'''
+
+
 
     def __init__(self, duration):
         self.state = State.IDLE
         self.remaining = duration
         self.end_time = None
 
+    def countdown(self):
+        while self.remaining > 0:
+            yield self.remaining
+            self.remaining -= 1
+
     def start(self):
         '''Starts the timer'''
-        if self.state != State.IDLE:
-            return
-        self.end_time = time.monotonic() + self.remaining
-        self.state = State.RUNNING
+        if self.state == State.IDLE:
+            self.end_time = time.monotonic() + self.remaining
+            self.state = State.RUNNING
 
     def pause(self):
         '''Pauses the timer'''
@@ -42,10 +42,11 @@ class CountdownTimer:
         '''Ends the timer'''
         if self.state == State.RUNNING or self.state == State.PAUSED:
             self.state = State.FINISHED
-            self.remaining = None
+            self.remaining = 0
             self.end_time = None
 
     def remaining_time(self):
+        '''Returns remaining time'''
         if self.end_time != None:
             if self.state == State.PAUSED:
                 return self.remaining
